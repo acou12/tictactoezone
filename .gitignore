@@ -1,0 +1,9 @@
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
+.netlify
+backend/src/secrets.ts
+backend/blog
+src/lib/config.ts
