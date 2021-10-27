@@ -1,51 +1,51 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,400&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,400&display=swap');
 
 * {
-  box-sizing: border-box;
-  margin: 0;
+	box-sizing: border-box;
+	margin: 0;
 }
 
 body {
-  font-family: Poppins;
+	font-family: Poppins;
 }
 
 main {
-  font: 2rem;
-  padding: 20px;
-  max-width: 1000px;
-  margin: auto;
+	font: 2rem;
+	padding: 20px;
+	max-width: 1000px;
+	margin: auto;
 }
 
 h2 {
-  font-weight: normal;
-  color: #444;
-  text-decoration: underline 2px;
+	font-weight: normal;
+	color: #444;
+	text-decoration: underline 2px;
 }
 
 h2,
 h3 {
-  margin-top: 20px;
+	margin-top: 20px;
 }
 
 a {
-  color: blue;
+	color: blue;
 }
 
 .button {
-  display: block;
-  outline: none;
-  border: none;
-  font: inherit;
-  color: white;
-  background-color: orange;
-  &:hover {
-    background-color: orangered;
-  }
-  border-radius: 0.3rem;
+	display: block;
+	outline: none;
+	border: none;
+	font: inherit;
+	color: white;
+	background-color: orange;
+	&:hover {
+		background-color: orangered;
+	}
+	border-radius: 0.3rem;
 }
 
 em {
-  text-decoration: dotted underline 3px;
-  font-style: normal;
-  color: orange;
+	text-decoration: dotted underline 3px;
+	font-style: normal;
+	color: orange;
 }

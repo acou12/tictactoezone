@@ -1,23 +1,23 @@
-import { page } from "$app/stores";
-import { onMount } from "svelte";
+import { page } from '$app/stores';
+import { onMount } from 'svelte';
 
 export function onNavigate(fn, after = () => {}) {
-  let mounted = false;
+	let mounted = false;
 
-  const unsubscribe = page.subscribe(() => {
-    if (mounted) {
-      after();
-      fn();
-    }
-  });
+	const unsubscribe = page.subscribe(() => {
+		if (mounted) {
+			after();
+			fn();
+		}
+	});
 
-  onMount(() => {
-    mounted = true;
-    fn();
+	onMount(() => {
+		mounted = true;
+		fn();
 
-    return () => {
-      unsubscribe();
-      mounted = false;
-    };
-  });
+		return () => {
+			unsubscribe();
+			mounted = false;
+		};
+	});
 }
