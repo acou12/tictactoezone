@@ -5,39 +5,39 @@
 		['', 'o', ''],
 		['', 'x', 'o'],
 	];
-	export let onclick: (x: number, y: number) => void;
+	export let onclick: (row: number, column: number) => void;
 	export let interactive: boolean = true;
 </script>
 
 <svg viewBox="-0.5 -0.5 4 4" xmlns="http://www.w3.org/2000/svg">
 	<g class="lines">
-		{#each board as row, x}
-			{#each row as tile, y}
+		{#each board as row, rowNum}
+			{#each row as tile, columnNum}
 				{#if tile === 'o'}
 					<circle
 						class="o"
-						cx={y + 0.5}
-						cy={x + 0.5}
+						cx={columnNum + 0.5}
+						cy={rowNum + 0.5}
 						r="0.35"
 						stroke-width="0.1"
 					/>
 				{:else if tile === 'x'}
 					<path
 						class="x"
-						d="M{y + 0.25},{x + 0.25} L{y + 0.75},{x + 0.75} M{y + 0.75},{x +
-							0.25} L{y + 0.25},{x + 0.75}"
+						d="M{columnNum + 0.25},{rowNum + 0.25} L{columnNum + 0.75},{rowNum + 0.75} M{columnNum + 0.75},{rowNum +
+							0.25} L{columnNum + 0.25},{rowNum + 0.75}"
 						stroke-width="0.1"
 					/>
 				{:else}
 					<rect
 						class:select={interactive}
-						{x}
-						{y}
+						x={columnNum}
+						y={rowNum}
 						rx="0.01"
 						width="1"
 						height="1"
 						stroke="none"
-						on:click={() => onclick(x, y)}
+						on:click={() => onclick(rowNum, columnNum)}
 					/>
 				{/if}
 			{/each}

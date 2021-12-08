@@ -1,8 +1,6 @@
 import preprocess from 'svelte-preprocess';
-import adapter from '@sveltejs/adapter-static';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { env } from 'process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -28,7 +26,8 @@ const config = {
 					}
 				}
 			}
-		}
+		},
+		// host: 'tttz.aydenmc.com'
 	}
 };
 

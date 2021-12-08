@@ -56,15 +56,15 @@
 		ws?.close();
 	});
 
-	async function move(x, y) {
-		if (board[x][y] !== '') return;
+	async function move(row, column) {
+		if (board[row][column] !== '') return;
 		if (turn !== role) return;
 		turn = turn === 'x' ? 'o' : 'x';
-		board[x][y] = role;
+		board[row][column] = role;
 		ws.send(
 			JSON.stringify({
 				type: 'move',
-				move: [x, y],
+				move: [row, column],
 			})
 		);
 	}

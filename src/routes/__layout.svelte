@@ -34,9 +34,7 @@
 		color: white;
 		padding: 0 10px;
 		@media (max-width: 600px) {
-			a {
-				display: none;
-			}
+			display: block;
 		}
 	}
 
