@@ -5,5 +5,4 @@ node_modules
 /package
 .netlify
 backend/src/secrets.ts
-backend/blog
 src/lib/config.ts
