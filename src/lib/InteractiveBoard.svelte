@@ -5,7 +5,7 @@
 		['', 'o', ''],
 		['', 'x', 'o'],
 	];
-	export let onclick: (row: number, column: number) => void;
+	export let onclick: (row: number, column: number) => void = () => {};
 	export let interactive: boolean = true;
 </script>
 
@@ -24,8 +24,9 @@
 				{:else if tile === 'x'}
 					<path
 						class="x"
-						d="M{columnNum + 0.25},{rowNum + 0.25} L{columnNum + 0.75},{rowNum + 0.75} M{columnNum + 0.75},{rowNum +
-							0.25} L{columnNum + 0.25},{rowNum + 0.75}"
+						d="M{columnNum + 0.25},{rowNum + 0.25} L{columnNum + 0.75},{rowNum +
+							0.75} M{columnNum + 0.75},{rowNum + 0.25} L{columnNum +
+							0.25},{rowNum + 0.75}"
 						stroke-width="0.1"
 					/>
 				{:else}

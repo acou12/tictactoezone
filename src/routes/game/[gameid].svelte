@@ -82,7 +82,7 @@
 
 <style lang="scss">
 	.board {
-		width: 500px;
+		max-width: 500px;
 		margin: auto;
 	}
 </style>

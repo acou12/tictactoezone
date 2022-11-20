@@ -34,7 +34,8 @@
 		color: white;
 		padding: 0 10px;
 		@media (max-width: 600px) {
-			display: block;
+			display: flex;
+			flex-direction: column;
 		}
 	}
 
@@ -42,6 +43,9 @@
 		padding: 5px;
 		margin-right: auto;
 		text-decoration: none;
+		@media (max-width: 600px) {
+			margin: auto;
+		}
 	}
 
 	.title {
