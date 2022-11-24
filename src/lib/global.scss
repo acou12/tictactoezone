@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,400&display=swap');
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+}
+
+body {
+	font-family: Poppins;
+}
+
+main {
+	font: 2rem;
+	padding: 20px;
+	max-width: 1000px;
+	margin: auto;
+}
+
+h2 {
+	font-weight: normal;
+	color: #444;
+	text-decoration: underline 2px;
+}
+
+h2,
+h3 {
+	margin-top: 20px;
+}
+
+a {
+	color: #4e93ff;
+}
+
+.button {
+	display: block;
+	outline: none;
+	border: none;
+	font: inherit;
+	color: white;
+	background-color: orange;
+	&:hover {
+		background-color: orangered;
+	}
+	border-radius: 0.3rem;
+}
+
+em {
+	text-decoration: dotted underline 3px;
+	font-style: normal;
+	color: orange;
+}
+
+.flex {
+	display: grid;
+	grid-template-columns: 3fr 1fr;
+	justify-content: center;
+	// width: 1000px;
+	max-width: 1000px;
+	margin: auto;
+	svg {
+		max-height: 80vh;
+		margin-left: auto;
+	}
+	.side {
+		&.moves {
+			border-radius: 10px;
+			padding: 10px;
+			padding-top: 45px;
+			box-shadow: 0px 0px 10px rgb(150, 150, 150);
+		}
+		position: relative;
+		.buttons {
+			width: calc(100% - 5px * 4);
+			position: absolute;
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			top: 5px;
+			.button {
+				border: solid black 1px;
+				text-align: center;
+				vertical-align: center;
+				margin: 5px;
+				// 	padding: 3px;
+			}
+		}
+	}
+}
+
+// .game-button {
+// 	background-color: white;
+// 	color: black;
+// }
+
+.button:disabled {
+	background-color: gray;
+	color: white;
+}
