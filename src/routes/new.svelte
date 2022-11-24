@@ -10,7 +10,6 @@
 		if (!session.authenticated) {
 			return { status: 302, redirect: `/login?after=${page.path}` };
 		}
-		console.log(session);
 		let data = await fetch(`${backend}/game`, {
 			method: 'POST',
 		});

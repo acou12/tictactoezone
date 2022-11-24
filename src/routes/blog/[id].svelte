@@ -6,6 +6,12 @@
 	export async function load({ page, fetch }: LoadInput): Promise<LoadOutput> {
 		const res = await fetch(`${backend}/blog/${page.params.id}`);
 		if (res.ok) {
+			if (page.params.id === 'refresh') {
+				return {
+					status: 302,
+					redirect: '/blog',
+				};
+			}
 			const data = await res.json();
 
 			return {
@@ -45,7 +51,6 @@
 						.split('\n')
 						.map((row) => row.split('')) as Tile[][],
 				};
-				console.log(sections[i]);
 			} else {
 				sections[i] = marked(sections[i] as string);
 			}

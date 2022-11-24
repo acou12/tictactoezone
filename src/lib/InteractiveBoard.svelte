@@ -1,12 +1,5 @@
 <script lang="ts">
 	type Tile = 'x' | 'o' | '';
-	export let board: Tile[][] = [
-		['o', 'x', ''],
-		['', 'o', ''],
-		['', 'x', 'o'],
-	];
-	export let onclick: (row: number, column: number) => void = () => {};
-	export let interactive: boolean = true;
 
 	const checkWin = (board: Tile[][]) => {
 		const winStates: Tile[][][] = [
@@ -111,9 +104,43 @@
 		];
 	};
 
-	$: filled = checkWin(board);
+	const randomBoard = () => {
+		const board: Tile[][] = [
+			['', '', ''],
+			['', '', ''],
+			['', '', ''],
+		];
+		let current: Tile = 'x';
+		let i = 0;
+		while (
+			checkWin(board)
+				.flat()
+				.every((it) => it === '') &&
+			i < 100
+		) {
+			i++;
+			const y = Math.floor(Math.random() * 3);
+			const x = Math.floor(Math.random() * 3);
+			if (board[y][x] === '') {
+				board[y][x] = current;
+				current = current === 'x' ? 'o' : 'x';
+			}
+		}
+		return board;
+	};
 
-	$: console.log(filled);
+	export let board: Tile[][] = randomBoard();
+
+	// export let board: Tile[][] = [
+	// 	['', '', ''],
+	// 	['', '', ''],
+	// 	['', '', ''],
+	// ];
+
+	export let onclick: (row: number, column: number) => void = () => {};
+	export let interactive: boolean = true;
+
+	$: filled = checkWin(board);
 </script>
 
 <svg viewBox="-0.5 -0.5 4 4" xmlns="http://www.w3.org/2000/svg">
@@ -150,7 +177,6 @@
 							width="1"
 							height="1"
 							stroke="none"
-							on:load={() => console.log('omega')}
 						/>
 					{/if}
 					<path

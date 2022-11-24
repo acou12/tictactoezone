@@ -308,6 +308,33 @@ app.ws('/game/:gameID', (ws, req): any => {
 								})
 							);
 						}
+					} else if (data.type === 'action') {
+						game.connections.forEach((it) => {
+							if (it !== ws) {
+								it.send(JSON.stringify(data));
+							}
+						});
+						if (data.action === 'resign') {
+							game.status === 'ENDED';
+							game.connections.forEach((it) => {
+								it.send(
+									JSON.stringify({
+										type: 'status',
+										status: 'ENDED',
+									})
+								);
+							});
+						} else if (data.action === 'accept_draw') {
+							game.status === 'ENDED';
+							game.connections.forEach((it) => {
+								it.send(
+									JSON.stringify({
+										type: 'status',
+										status: 'ENDED',
+									})
+								);
+							});
+						}
 					}
 				});
 			}

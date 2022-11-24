@@ -73,14 +73,18 @@ em {
 			width: calc(100% - 5px * 4);
 			position: absolute;
 			display: grid;
-			grid-template-columns: 1fr 1fr 1fr;
+			grid-template-columns: 1fr 1fr;
 			top: 5px;
-			.button {
-				border: solid black 1px;
-				text-align: center;
-				vertical-align: center;
-				margin: 5px;
-				// 	padding: 3px;
+			.button-wrapper {
+				padding: 3px;
+				.button {
+					width: 100%;
+					border: solid black 1px;
+					text-align: center;
+					vertical-align: center;
+					// margin: 5px;
+					// 	padding: 3px;
+				}
 			}
 		}
 	}

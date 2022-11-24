@@ -5,7 +5,6 @@
 		let res = await fetch(`${backend}/game/${page.params.gameid}`);
 		if (res.ok) {
 			let data = await res.json();
-			console.log(data);
 			return {
 				props: data,
 			};
@@ -55,6 +54,16 @@
 					}
 				} else if (data.type === 'status') {
 					status = data.status;
+				} else if (data.type === 'result') {
+					gameResult = data.result;
+				} else if (data.type === 'action') {
+					if (data.action === 'resign') {
+						gameResult = 'Your opponent resigned.';
+					} else if (data.action === 'offer_draw') {
+						drawOffered = true;
+					} else if (data.action === 'accept_draw') {
+						gameResult = 'Your opponent accepted a draw.';
+					}
 				}
 			};
 		},
@@ -63,11 +72,14 @@
 		}
 	);
 
+	let drawOffered = false;
+
 	onDestroy(() => {
 		ws?.close();
 	});
 
 	async function move(row: number, column: number) {
+		drawOffered = false;
 		if (board[row][column] !== '') return;
 		if (turn !== role) return;
 		turn = turn === 'x' ? 'o' : 'x';
@@ -92,13 +104,35 @@
 				action: 'resign',
 			})
 		);
+		gameResult = 'You resigned.';
 		status = 'ENDED';
-		alert('You resigned. What a loser.');
 	};
 
-	const draw = () => {};
+	const draw = () => {
+		ws.send(
+			JSON.stringify({
+				type: 'action',
+				action: 'offer_draw',
+			})
+		);
+	};
+
+	const acceptDraw = () => {
+		ws.send(
+			JSON.stringify({
+				type: 'action',
+				action: 'accept_draw',
+			})
+		);
+		gameResult = 'You accepted the draw.';
+	};
 
 	const takeback = () => {};
+
+	$: gameInteractable =
+		role !== false && connectedToWebsocket && status !== 'ENDED';
+
+	let gameResult = '';
 </script>
 
 <main>
@@ -112,33 +146,45 @@
 </main>
 
 <div class="flex">
-	<InteractiveBoard
-		interactive={role !== false && connectedToWebsocket && status !== 'ENDED'}
-		onclick={move}
-		{board}
-	/>
+	<InteractiveBoard interactive={gameInteractable} onclick={move} {board} />
 	<div class="side moves">
-		{#each moves as move, i}
-			{i % 2 === 0 ? `${Math.floor(i / 2) + 1}. ` : ' '}
-			{convertToNotation(move)}
-			{#if i % 2 === 1} <br /> {/if}
-		{/each}
+		<div>
+			{#each moves as move, i}
+				{i % 2 === 0 ? `${Math.floor(i / 2) + 1}. ` : ' '}
+				{convertToNotation(move)}
+				{#if i % 2 === 1} <br /> {/if}
+			{/each}
+		</div>
+
+		<div>
+			{gameResult}
+		</div>
+
 		<div class="buttons">
-			<button
-				class="button game-button"
-				on:click={resign}
-				disabled={status === 'ENDED'}>Resign</button
-			>
-			<button
-				class="button game-button"
-				on:click={draw}
-				disabled={status === 'ENDED'}>Draw</button
-			>
-			<button
-				class="button game-button"
-				on:click={takeback}
-				disabled={status === 'ENDED'}>Takeback</button
-			>
+			<div class="button-wrapper">
+				<button
+					class="button game-button"
+					on:click={resign}
+					disabled={!gameInteractable}>Resign</button
+				>
+			</div>
+			{#if drawOffered}
+				<div class="button-wrapper">
+					<button
+						class="button game-button"
+						on:click={acceptDraw}
+						disabled={!gameInteractable}>Accept</button
+					>
+				</div>
+			{:else}
+				<div class="button-wrapper">
+					<button
+						class="button game-button"
+						on:click={draw}
+						disabled={!gameInteractable}>Draw</button
+					>
+				</div>
+			{/if}
 		</div>
 	</div>
 </div>
