@@ -18,8 +18,8 @@
 <script lang="ts">
 	import { dev } from '$app/env';
 
-	export let error;
-	export let status;
+	export let error: { message: string; stack: string };
+	export let status: number;
 </script>
 
 <h1>{status}</h1>

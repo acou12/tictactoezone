@@ -9,6 +9,7 @@ var express_ws_1 = __importDefault(require("express-ws"));
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var fs_1 = __importDefault(require("fs"));
 var auth_1 = require("./auth");
+var secrets_1 = require("./secrets");
 var app = (0, express_ws_1["default"])((0, express_1["default"])()).app;
 app.use(express_1["default"].json());
 app.use((0, cors_1["default"])());
@@ -35,11 +36,11 @@ for (var i = 0; i < 26; i++) {
 }
 app.post('/register', function (req, res) {
     if (!req.body.username || !req.body.password) {
-        res.status(400).send("You must have both a username and a password.");
+        res.status(400).send('You must have both a username and a password.');
         return;
     }
     else if (users.filter(function (it) { return it.username === req.body.username; })[0]) {
-        res.status(409).send("Sorry, that user already exists.");
+        res.status(409).send('Sorry, that user already exists.');
         return;
     }
     var newUser = {
@@ -48,10 +49,11 @@ app.post('/register', function (req, res) {
         id: randomID(16)
     };
     users.push(newUser);
-    res.json({ token: jsonwebtoken_1["default"].sign({
+    res.json({
+        token: jsonwebtoken_1["default"].sign({
             username: newUser.username,
             id: newUser.id
-        }, "superSecretKeyThatNoOneElseKnows")
+        }, secrets_1.key)
     });
 });
 // POST /login
@@ -60,15 +62,18 @@ app.post('/register', function (req, res) {
 // returns: { token }
 app.post('/login', function (req, res) {
     if (!req.body.username || !req.body.password)
-        return res.status(400).send("WRONG.");
-    var theUser = users.filter(function (it) { return it.username === req.body.username && it.password === req.body.password; })[0];
+        return res.status(400).send('WRONG.');
+    var theUser = users.filter(function (it) {
+        return it.username === req.body.username && it.password === req.body.password;
+    })[0];
     if (!theUser) {
         return res.status(401).send('Invalid password.');
     }
-    res.json({ token: jsonwebtoken_1["default"].sign({
+    res.json({
+        token: jsonwebtoken_1["default"].sign({
             username: theUser.username,
             id: theUser.id
-        }, "superSecretKeyThatNoOneElseKnows")
+        }, secrets_1.key)
     });
 });
 var games = [];
@@ -78,7 +83,7 @@ var tickets = {};
 // auth: required
 app.post('/game', auth_1.verifyToken, function (req, res) {
     if (!req.body.user) {
-        res.status(400).send("You must be logged in to create a game.");
+        res.status(400).send('You must be logged in to create a game.');
         return;
     }
     var newGame = {
@@ -89,6 +94,7 @@ app.post('/game', auth_1.verifyToken, function (req, res) {
             ['', '', ''],
             ['', '', ''],
         ],
+        moves: [],
         connections: [],
         turn: 'x',
         status: 'WAITING'
@@ -102,19 +108,28 @@ app.post('/game', auth_1.verifyToken, function (req, res) {
 // description: adds the requesting user to the game
 app.post('/join/:gameID', auth_1.verifyToken, function (req, res) {
     if (!req.body.user) {
-        res.status(400).send("You must be logged in to join a game.");
+        res.status(400).send('You must be logged in to join a game.');
         return;
     }
     var game = games.filter(function (it) { return it.id === req.params.gameID; })[0];
     if (!game) {
-        res.status(404).send("No game with that ID.");
+        res.status(404).send('No game with that ID.');
         return;
     }
     if (game.players.length === 2) {
-        res.status(400).send("That game is full.");
+        res.status(400).send('That game is full.');
         return;
     }
     game.players.push(req.body.user.id);
+    if (game.players.length >= 2) {
+        game.status = 'ONGOING';
+        game.connections.forEach(function (connection) {
+            return connection.send(JSON.stringify({
+                type: 'status',
+                status: game.status
+            }));
+        });
+    }
     res.json({});
 });
 function generateTicket(uid) {
@@ -130,7 +145,7 @@ function generateTicket(uid) {
 app.get('/game/:gameID', auth_1.optionalToken, function (req, res) {
     var game = games.filter(function (it) { return it.id === req.params.gameID; })[0];
     if (!game) {
-        res.status(404).send("No game with that ID.");
+        res.status(404).send('No game with that ID.');
         return;
     }
     var role = false;
@@ -143,6 +158,7 @@ app.get('/game/:gameID', auth_1.optionalToken, function (req, res) {
                 board: game.board,
                 turn: game.turn,
                 status: game.status,
+                moves: game.moves,
                 role: role,
                 ticket: ticket
             });
@@ -153,6 +169,7 @@ app.get('/game/:gameID', auth_1.optionalToken, function (req, res) {
         board: game.board,
         turn: game.turn,
         status: game.status,
+        moves: game.moves,
         role: role
     });
 });
@@ -222,6 +239,16 @@ app.ws('/game/:gameID', function (ws, req) {
                                     role: role
                                 }));
                             });
+                            game.moves.push([x_1, y_1]);
+                            var winner = gameOver(game);
+                            if (winner !== undefined) {
+                                game.connections.forEach(function (it) {
+                                    it.send(JSON.stringify({
+                                        type: 'status',
+                                        status: 'ENDED'
+                                    }));
+                                });
+                            }
                         }
                         else {
                             ws.send(JSON.stringify({
@@ -246,11 +273,67 @@ app.ws('/game/:gameID', function (ws, req) {
         game.connections.push(ws);
     }
 });
+// fear
+var gameOver = function (game) {
+    if ((game.board[0][2] == 'o' &&
+        game.board[1][2] == 'o' &&
+        game.board[2][2] == 'o') ||
+        (game.board[0][1] == 'o' &&
+            game.board[1][1] == 'o' &&
+            game.board[2][1] == 'o') ||
+        (game.board[0][0] == 'o' &&
+            game.board[1][0] == 'o' &&
+            game.board[2][0] == 'o') ||
+        (game.board[0][0] == 'o' &&
+            game.board[0][1] == 'o' &&
+            game.board[0][2] == 'o') ||
+        (game.board[1][0] == 'o' &&
+            game.board[1][1] == 'o' &&
+            game.board[1][2] == 'o') ||
+        (game.board[2][0] == 'o' &&
+            game.board[2][1] == 'o' &&
+            game.board[2][2] == 'o') ||
+        (game.board[0][0] == 'o' &&
+            game.board[1][1] == 'o' &&
+            game.board[2][2] == 'o') ||
+        (game.board[2][2] == 'o' &&
+            game.board[1][1] == 'o' &&
+            game.board[0][0] == 'o')) {
+        return 'o';
+    }
+    if ((game.board[0][2] == 'x' &&
+        game.board[1][2] == 'x' &&
+        game.board[2][2] == 'x') ||
+        (game.board[0][1] == 'x' &&
+            game.board[1][1] == 'x' &&
+            game.board[2][1] == 'x') ||
+        (game.board[0][0] == 'x' &&
+            game.board[1][0] == 'x' &&
+            game.board[2][0] == 'x') ||
+        (game.board[0][0] == 'x' &&
+            game.board[0][1] == 'x' &&
+            game.board[0][2] == 'x') ||
+        (game.board[1][0] == 'x' &&
+            game.board[1][1] == 'x' &&
+            game.board[1][2] == 'x') ||
+        (game.board[2][0] == 'x' &&
+            game.board[2][1] == 'x' &&
+            game.board[2][2] == 'x') ||
+        (game.board[0][0] == 'x' &&
+            game.board[1][1] == 'x' &&
+            game.board[2][2] == 'x') ||
+        (game.board[2][2] == 'x' &&
+            game.board[1][1] == 'x' &&
+            game.board[0][0] == 'x')) {
+        return 'x';
+    }
+};
 var posts = [];
-// Get the blog posts, without the full body
+/**
+ * Return a list of blog posts without the full body.
+ */
 app.get('/blog', function (req, res) {
-    res.json(posts
-        .map(function (it) { return ({
+    res.json(posts.map(function (it) { return ({
         id: it.id,
         title: it.title,
         description: it.description,
@@ -267,13 +350,13 @@ app.get('/blog/:id', function (req, res) {
         res.json(blog);
     }
     else {
-        res.status(404).send('That post doesn\'t exist.');
+        res.status(404).send("That post doesn't exist.");
     }
 });
 /** Load all pages from /blog/*.md into the posts array.
-  * Each post has a title, starting with '# ', and a
-  * description, starting with '## '.
-  */
+ * Each post has a title, starting with '# ', and a
+ * description, starting with '## '.
+ */
 function loadPages() {
     var posts = [];
     var files = fs_1["default"].readdirSync('./blog');

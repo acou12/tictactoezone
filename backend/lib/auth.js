@@ -6,6 +6,7 @@ exports.__esModule = true;
 exports.optionalToken = exports.verifyToken = void 0;
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var cookie_1 = __importDefault(require("cookie"));
+var secrets_1 = require("./secrets");
 var verifyToken = function (req, res, next) {
     var _a;
     var token = cookie_1["default"].parse((_a = req.headers.cookie) !== null && _a !== void 0 ? _a : '').token;
@@ -13,7 +14,7 @@ var verifyToken = function (req, res, next) {
         return res.status(403).send("A token is required for authentication");
     }
     try {
-        var decoded = jsonwebtoken_1["default"].verify(token, "superSecretKeyThatNoOneElseKnows");
+        var decoded = jsonwebtoken_1["default"].verify(token, secrets_1.key);
         req.body.user = decoded;
     }
     catch (err) {
@@ -27,7 +28,7 @@ var optionalToken = function (req, res, next) {
     var token = cookie_1["default"].parse((_a = req.headers.cookie) !== null && _a !== void 0 ? _a : '').token;
     if (token) {
         try {
-            var decoded = jsonwebtoken_1["default"].verify(token, "superSecretKeyThatNoOneElseKnows");
+            var decoded = jsonwebtoken_1["default"].verify(token, secrets_1.key);
             req.body.user = decoded;
         }
         catch (err) { }
