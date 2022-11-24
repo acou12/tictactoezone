@@ -4,5 +4,6 @@ node_modules
 /.svelte-kit
 /package
 .netlify
+backend/lib/*
 backend/src/secrets.ts
 src/lib/config.ts

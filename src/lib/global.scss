@@ -49,3 +49,49 @@ em {
 	font-style: normal;
 	color: orange;
 }
+
+.flex {
+	display: grid;
+	grid-template-columns: 3fr 1fr;
+	justify-content: center;
+	// width: 1000px;
+	max-width: 1000px;
+	margin: auto;
+	svg {
+		max-height: 80vh;
+		margin-left: auto;
+	}
+	.side {
+		&.moves {
+			border-radius: 10px;
+			padding: 10px;
+			padding-top: 45px;
+			box-shadow: 0px 0px 10px rgb(150, 150, 150);
+		}
+		position: relative;
+		.buttons {
+			width: calc(100% - 5px * 4);
+			position: absolute;
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			top: 5px;
+			.button {
+				border: solid black 1px;
+				text-align: center;
+				vertical-align: center;
+				margin: 5px;
+				// 	padding: 3px;
+			}
+		}
+	}
+}
+
+// .game-button {
+// 	background-color: white;
+// 	color: black;
+// }
+
+.button:disabled {
+	background-color: gray;
+	color: white;
+}

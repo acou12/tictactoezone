@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
 	import type { LoadInput, LoadOutput } from '@sveltejs/kit';
 
-	export async function load({ page, fetch }: LoadInput): Promise<LoadOutput> {
+	export async function load({ fetch }: LoadInput): Promise<LoadOutput> {
 		const res = await fetch(`${backend}/blog/`);
 		const data = await res.json();
 
@@ -26,27 +26,29 @@
 	export let pages: BlogPost[];
 </script>
 
-<div class="pages">
-	{#each pages as page}
+<main>
+	<div class="pages">
+		{#each pages as page}
+			<div class="page">
+				<a href="/blog/{page.id}">
+					<h2>{page.title}</h2>
+					<p>{page.description}</p>
+					<!-- <img src={page.img} alt="The image for {page.title}."> -->
+				</a>
+			</div>
+		{/each}
 		<div class="page">
-			<a href="/blog/{page.id}">
-				<h2>{page.title}</h2>
-				<p>{page.description}</p>
-				<!-- <img src={page.img} alt="The image for {page.title}."> -->
+			<a href="https://www.tictac.com/">
+				<h2>New flavors!</h2>
+				<p>
+					Check out new TicTac® flavours, including Coca-Cola, X-Freeze, and Big
+					Berry
+				</p>
+				<span class="ad">SPONSORED </span>
 			</a>
 		</div>
-	{/each}
-	<div class="page">
-		<a href="https://www.tictac.com/">
-			<h2>New flavors!</h2>
-			<p>
-				Check out new TicTac® flavours, including Coca-Cola, X-Freeze, and Big
-				Berry
-			</p>
-			<span class="ad">SPONSORED </span>
-		</a>
 	</div>
-</div>
+</main>
 
 <style lang="scss">
 	.ad {

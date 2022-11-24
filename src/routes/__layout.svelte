@@ -22,9 +22,7 @@
 	{/if}
 </nav>
 
-<main>
-	<slot />
-</main>
+<slot />
 
 <style lang="scss">
 	nav {

@@ -80,13 +80,12 @@
 	let plans: Plan[] = [];
 
 	let price = 0;
-	let i = 0;
 
 	let shownPlans: Plan[] = plans.slice(0, roots.length);
 
 	let infiniteReference: HTMLDivElement;
 
-	let animationFrame;
+	let animationFrame: number;
 
 	function checkIfShouldLoad() {
 		animationFrame = requestAnimationFrame(checkIfShouldLoad);
@@ -163,34 +162,37 @@
 		if (browser) cancelAnimationFrame(animationFrame);
 	});
 
-	function slugify(s: string): string {
-		return s.toLowerCase().split(' ').join('-');
-	}
+	// 	function slugify(s: string): string {
+	// 		return s.toLowerCase().split(' ').join('-');
+	// 	}
 </script>
 
-<h1>Pricing</h1>
-<p class="description">
-	At TicTacToeZone™, we believe high quality TicTacToe® should not be locked
-	behind a paywall. That's why we offer an extremely generous free plan, and
-	allow you to pay for the features you want.
-</p>
-<h2>Basic Plans</h2>
-<div class="plans">
-	{#each shownPlans as plan}
-		<div class="plan">
-			<h3>
-				{plan.name} Plan
-				<span class="price">(${(plan.price ? plan.price - 1 : 0) / 100})</span>
-			</h3>
-			{#if plan.description}<p>{plan.description}</p>{/if}
-			<ul class="features">
-				{#each plan.features as f}<li>{f}</li>{/each}
-			</ul>
-			<a class="plan-buy" href="/">BUY NOW</a>
-		</div>
-	{/each}
-	<div bind:this={infiniteReference} />
-</div>
+<main>
+	<h1>Pricing</h1>
+	<p class="description">
+		At TicTacToeZone™, we believe high quality TicTacToe® should not be locked
+		behind a paywall. That's why we offer an extremely generous free plan, and
+		allow you to pay for the features you want.
+	</p>
+	<h2>Basic Plans</h2>
+	<div class="plans">
+		{#each shownPlans as plan}
+			<div class="plan">
+				<h3>
+					{plan.name} Plan
+					<span class="price">(${(plan.price ? plan.price - 1 : 0) / 100})</span
+					>
+				</h3>
+				{#if plan.description}<p>{plan.description}</p>{/if}
+				<ul class="features">
+					{#each plan.features as f}<li>{f}</li>{/each}
+				</ul>
+				<a class="plan-buy" href="/">BUY NOW</a>
+			</div>
+		{/each}
+		<div bind:this={infiniteReference} />
+	</div>
+</main>
 
 <style lang="scss">
 	.description {

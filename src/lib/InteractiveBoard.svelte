@@ -7,6 +7,113 @@
 	];
 	export let onclick: (row: number, column: number) => void = () => {};
 	export let interactive: boolean = true;
+
+	const checkWin = (board: Tile[][]) => {
+		const winStates: Tile[][][] = [
+			[
+				['o', '', ''],
+				['o', '', ''],
+				['o', '', ''],
+			],
+			[
+				['', 'o', ''],
+				['', 'o', ''],
+				['', 'o', ''],
+			],
+			[
+				['', '', 'o'],
+				['', '', 'o'],
+				['', '', 'o'],
+			],
+			[
+				['o', 'o', 'o'],
+				['', '', ''],
+				['', '', ''],
+			],
+			[
+				['', '', ''],
+				['o', 'o', 'o'],
+				['', '', ''],
+			],
+			[
+				['', '', ''],
+				['', '', ''],
+				['o', 'o', 'o'],
+			],
+			[
+				['o', '', ''],
+				['', 'o', ''],
+				['', '', 'o'],
+			],
+			[
+				['', '', 'o'],
+				['', 'o', ''],
+				['o', '', ''],
+			],
+			[
+				['x', '', ''],
+				['x', '', ''],
+				['x', '', ''],
+			],
+			[
+				['', 'x', ''],
+				['', 'x', ''],
+				['', 'x', ''],
+			],
+			[
+				['', '', 'x'],
+				['', '', 'x'],
+				['', '', 'x'],
+			],
+			[
+				['x', 'x', 'x'],
+				['', '', ''],
+				['', '', ''],
+			],
+			[
+				['', '', ''],
+				['x', 'x', 'x'],
+				['', '', ''],
+			],
+			[
+				['', '', ''],
+				['', '', ''],
+				['x', 'x', 'x'],
+			],
+			[
+				['x', '', ''],
+				['', 'x', ''],
+				['', '', 'x'],
+			],
+			[
+				['', '', 'x'],
+				['', 'x', ''],
+				['x', '', ''],
+			],
+		];
+		for (const state of winStates) {
+			let allMatch = true;
+			for (let y = 0; y < 3 && allMatch; y++) {
+				for (let x = 0; x < 3 && allMatch; x++) {
+					if (state[y][x] !== '' && board[y][x] !== state[y][x]) {
+						allMatch = false;
+					}
+				}
+			}
+			if (allMatch) {
+				return state;
+			}
+		}
+		return [
+			['', '', ''],
+			['', '', ''],
+			['', '', ''],
+		];
+	};
+
+	$: filled = checkWin(board);
+
+	$: console.log(filled);
 </script>
 
 <svg viewBox="-0.5 -0.5 4 4" xmlns="http://www.w3.org/2000/svg">
@@ -14,22 +121,57 @@
 		{#each board as row, rowNum}
 			{#each row as tile, columnNum}
 				{#if tile === 'o'}
+					{#if filled[rowNum][columnNum]}
+						<rect
+							class="filledO"
+							x={columnNum}
+							y={rowNum}
+							rx="0.01"
+							width="1"
+							height="1"
+							stroke="none"
+						/>
+					{/if}
 					<circle
 						class="o"
-						cx={columnNum + 0.5}
-						cy={rowNum + 0.5}
+						class:white={filled[rowNum][columnNum]}
+						cx={columnNum + 0.5 + (columnNum - 1) * 0.05}
+						cy={rowNum + 0.5 + (rowNum - 1) * 0.05}
 						r="0.35"
 						stroke-width="0.1"
 					/>
 				{:else if tile === 'x'}
+					{#if filled[rowNum][columnNum]}
+						<rect
+							class="filledX"
+							x={columnNum}
+							y={rowNum}
+							rx="0.01"
+							width="1"
+							height="1"
+							stroke="none"
+							on:load={() => console.log('omega')}
+						/>
+					{/if}
 					<path
 						class="x"
-						d="M{columnNum + 0.25},{rowNum + 0.25} L{columnNum + 0.75},{rowNum +
-							0.75} M{columnNum + 0.75},{rowNum + 0.25} L{columnNum +
-							0.25},{rowNum + 0.75}"
+						class:white={filled[rowNum][columnNum]}
+						d="M{columnNum + 0.25 + (columnNum - 1) * 0.05},{rowNum +
+							0.25 +
+							(rowNum - 1) * 0.05} L{columnNum +
+							0.75 +
+							(columnNum - 1) * 0.05},{rowNum +
+							0.75 +
+							(rowNum - 1) * 0.05} M{columnNum +
+							0.75 +
+							(columnNum - 1) * 0.05},{rowNum +
+							0.25 +
+							(rowNum - 1) * 0.05} L{columnNum +
+							0.25 +
+							(columnNum - 1) * 0.05},{rowNum + 0.75 + (rowNum - 1) * 0.05}"
 						stroke-width="0.1"
 					/>
-				{:else}
+				{:else if !filled[rowNum][columnNum]}
 					<rect
 						class:select={interactive}
 						x={columnNum}
@@ -67,11 +209,25 @@
 		}
 	}
 
+	.filledX {
+		fill: #ff7f2a;
+		stroke: #ff7f2a;
+	}
+
+	.filledO {
+		fill: #4f9fe6;
+		stroke: #4f9fe6;
+	}
+
 	.x {
 		stroke: #ff7f2a;
 	}
 
 	.o {
 		stroke: #4f9fe6;
+	}
+
+	.white {
+		stroke: white !important;
 	}
 </style>

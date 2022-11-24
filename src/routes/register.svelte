@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { backend } from '$lib/config';
 	import Loading from '$lib/Loading.svelte';
 
@@ -6,6 +7,8 @@
 	let error = '';
 
 	let numErrors = 0;
+
+	$: after = $page.query.get('after');
 
 	async function register() {
 		loggingIn = true;
@@ -22,7 +25,7 @@
 		if (res.ok) {
 			let data = await res.json();
 			document.cookie = `token=${data.token}`;
-			window.location.href = '/';
+			window.location.href = after ?? '/';
 		} else {
 			loggingIn = false;
 			if (res.status === 409) {
@@ -43,18 +46,20 @@
 	let password: string;
 </script>
 
-{#if loggingIn}
-	<Loading size={200} />
-{:else}
-	<h1>Register</h1>
-	<form on:submit|preventDefault={register}>
-		<input type="text" placeholder="Username" bind:value={username} />
-		<input type="password" placeholder="Password" bind:value={password} />
-		<input type="submit" value="Login" />
-	</form>
-	<p>Or <a href="/login">login</a>, if you already have an account.</p>
-	<p class="error">{error}</p>
-{/if}
+<main>
+	{#if loggingIn}
+		<Loading size={200} />
+	{:else}
+		<h1>Register</h1>
+		<form on:submit|preventDefault={register}>
+			<input type="text" placeholder="Username" bind:value={username} />
+			<input type="password" placeholder="Password" bind:value={password} />
+			<input type="submit" value="Login" />
+		</form>
+		<p>Or <a href="/login">login</a>, if you already have an account.</p>
+		<p class="error">{error}</p>
+	{/if}
+</main>
 
 <style lang="scss">
 	@import 'forms';

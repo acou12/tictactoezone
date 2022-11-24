@@ -53,22 +53,24 @@
 	}
 </script>
 
-<article>
-	<h1>{data.title}</h1>
-	{#each sections as s}
-		{#if typeof s === 'string'}
-			<p>{@html s}</p>
-		{:else}
-			<div class="board">
-				<InteractiveBoard
-					board={s.board}
-					interactive={false}
-					onclick={() => {}}
-				/>
-			</div>
-		{/if}
-	{/each}
-</article>
+<main>
+	<article>
+		<h1>{data.title}</h1>
+		{#each sections as s}
+			{#if typeof s === 'string'}
+				<p>{@html s}</p>
+			{:else}
+				<div class="board">
+					<InteractiveBoard
+						board={s.board}
+						interactive={false}
+						onclick={() => {}}
+					/>
+				</div>
+			{/if}
+		{/each}
+	</article>
+</main>
 
 <style lang="scss">
 	.board {
